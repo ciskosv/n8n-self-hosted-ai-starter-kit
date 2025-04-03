@@ -1,0 +1,12 @@
+shared/audio/
+shared/docs/
+shared/images/
+shared/logs/
+shared/ocr/
+shared/tts/
+ocr/huggingface_cache
+ocr/shared/
+shared/cache/
+.env
+shared/scripts/config/
+shared/scripts/config/ia_stack_monitor_host.conf

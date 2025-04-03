@@ -1,0 +1,88 @@
+{
+  "name": "\ud83d\udd14 Healthcheck - IA Services",
+  "nodes": [
+    {
+      "parameters": {
+        "command": "bash /data/shared/scripts/healthcheck.sh"
+      },
+      "id": "1",
+      "name": "Run Healthcheck",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        300,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json[\"stdout\"]}}",
+              "operation": "contains",
+              "value2": "NO responde"
+            }
+          ]
+        }
+      },
+      "id": "2",
+      "name": "\u00bfHay errores?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        500,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "YOUR_TELEGRAM_CHAT_ID",
+        "text": "\ud83d\udea8 *Alerta:* Uno o m\u00e1s servicios no responden.\n\n```{{$json[\"stdout\"]}}```",
+        "additionalFields": {},
+        "options": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "3",
+      "name": "Enviar alerta Telegram",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [
+        700,
+        120
+      ],
+      "credentials": {
+        "telegramApi": {
+          "id": "REEMPLAZAR_CREDENCIAL_ID",
+          "name": "Telegram Bot"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Run Healthcheck": {
+      "main": [
+        [
+          {
+            "node": "\u00bfHay errores?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "\u00bfHay errores?": {
+      "main": [
+        [
+          {
+            "node": "Enviar alerta Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    }
+  }
+}

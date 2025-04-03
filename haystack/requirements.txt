@@ -1,0 +1,13 @@
+haystack-ai==2.1.0
+qdrant-haystack==2.0.1
+sentence-transformers==2.2.2
+transformers==4.34.1
+accelerate==0.23.0
+huggingface_hub==0.17.3
+fastapi==0.95.2
+uvicorn==0.22.0
+python-docx==0.8.11
+python-multipart==0.0.6
+pydantic==1.10.10
+qdrant-client==1.6.4
+pypdf==3.9.1

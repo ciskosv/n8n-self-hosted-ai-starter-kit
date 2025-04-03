@@ -1,0 +1,24 @@
+services:
+  ocr-router:
+    volumes:
+      - ./ocr/ocr-router:/app
+
+  ocr-api:
+    volumes:
+      - ./ocr/ocr-api:/app
+
+  ocr-paddle:
+    volumes:
+      - ./ocr/ocr-paddle:/app
+
+  whisper-api:
+    volumes:
+      - ./whisper:/app
+
+  haystack-api:
+    volumes:
+      - ./haystack:/app
+
+  tts-api:
+    volumes:
+      - ./tts-api:/app

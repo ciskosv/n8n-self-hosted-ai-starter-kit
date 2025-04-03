@@ -1,0 +1,113 @@
+services:
+
+  # 🧠 Visión por computadora
+  vision-api:
+    build:
+      context: ./aiservices/vision-api
+    container_name: vision-api
+    networks: ['ainetwork']
+    ports:
+      - "5004:5004"
+    volumes:
+      - ./shared/images:/data
+    environment:
+      - MODEL=cv_model_v1
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5004/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # 🧬 IA Médica / Biológica
+  medbio-api:
+    build:
+      context: ./aiservices/medbio-api
+    container_name: medbio-api
+    networks: ['ainetwork']
+    ports:
+      - "5005:5005"
+    volumes:
+      - ./shared/med:/data
+    environment:
+      - MODEL=medbert
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5005/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # 📈 Predicción de Series de Tiempo
+  timeseries-api:
+    build:
+      context: ./aiservices/timeseries-api
+    container_name: timeseries-api
+    networks: ['ainetwork']
+    ports:
+      - "5006:5006"
+    volumes:
+      - ./shared/timeseries:/data
+    environment:
+      - MODEL=prophet
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5006/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # 🏃 Agente Entrenador para Trail / Running
+  coach-ai:
+    build:
+      context: ./aiservices/coach-ai
+    container_name: coach-ai
+    networks: ['ainetwork']
+    ports:
+      - "5007:5007"
+    volumes:
+      - ./shared/entrenos:/data
+    environment:
+      - MODE=trail_training
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5007/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # 🧠 Agentes Autónomos (Auto-GPT, CrewAI)
+  autonomous-agent:
+    build:
+      context: ./aiservices/autonomous-agent
+    container_name: autonomous-agent
+    networks: ['ainetwork']
+    ports:
+      - "5008:5008"
+    volumes:
+      - ./shared/agent:/data
+    environment:
+      - MODE=planning
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5008/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # 📄 Clasificadores / Detectores personalizados
+  classifier-api:
+    build:
+      context: ./aiservices/classifier-api
+    container_name: classifier-api
+    networks: ['ainetwork']
+    ports:
+      - "5009:5009"
+    volumes:
+      - ./shared/classifier:/data
+    environment:
+      - MODE=documents
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5009/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  ainetwork:
+    external: true

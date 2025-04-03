@@ -1,0 +1,40 @@
+version: '1'
+components:
+  - name: DocumentStore
+    type: QdrantDocumentStore
+    params:
+      host: qdrant
+      port: 6333
+      embedding_dim: 384
+      recreate_index: false
+
+  - name: Retriever
+    type: EmbeddingRetriever
+    params:
+      document_store: DocumentStore
+      embedding_model: sentence-transformers/all-MiniLM-L6-v2
+      use_gpu: false
+
+  - name: PromptNode
+    type: PromptNode
+    params:
+      model_name_or_path: http://ollama:11434
+      api_type: ollama
+      max_length: 1024
+      stop_words: ["</s>"]
+
+  - name: PromptTemplate
+    type: PromptTemplate
+    params:
+      prompt: |
+        Basado en los siguientes documentos, responde la pregunta:
+        {{documents}}
+        Pregunta: {{query}}
+
+pipelines:
+  - name: query_pipeline
+    nodes:
+      - name: Retriever
+        inputs: [Query]
+      - name: PromptNode
+        inputs: [Retriever]
