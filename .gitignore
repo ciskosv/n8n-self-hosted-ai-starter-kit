@@ -11,6 +11,4 @@ shared/scripts/config/
 shared/scripts/config/ia_stack_monitor_host.conf
 
 # Always ignore:
-.env
-.env.backup
-.env.local
+.env*
