@@ -7,6 +7,10 @@ shared/tts/
 ocr/huggingface_cache
 ocr/shared/
 shared/cache/
-.env
 shared/scripts/config/
 shared/scripts/config/ia_stack_monitor_host.conf
+
+# Always ignore:
+.env
+.env.backup
+.env.local
