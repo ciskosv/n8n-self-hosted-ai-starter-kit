@@ -11,3 +11,4 @@ python-multipart==0.0.6
 pydantic==1.10.10
 qdrant-client==1.6.4
 pypdf==3.9.1
+git+https://github.com/ciskosv/fastapi_response_standard.git@v1.0.0

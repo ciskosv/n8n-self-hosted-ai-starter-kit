@@ -1,5 +1,6 @@
 # 📁 Archivo: tts_api.py
 from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
 from fastapi.responses import FileResponse, JSONResponse
 import subprocess
 import uuid
@@ -7,25 +8,41 @@ import os
 import torch  # Importación explícita de Torch
 from pathlib import Path
 
+from fastapi_response_standard import success_response
+from fastapi_response_standard import (
+    CatchAllMiddleware,
+    success_response,
+    error_response
+)
+from fastapi_response_standard.common_exception_handlers import (
+    not_found_handler,
+    validation_error_handler
+)
+
 app = FastAPI()
+app.add_middleware(CatchAllMiddleware)
 
 # Configuración de directorios
-AUDIO_DIR = "/data"
+AUDIO_DIR = "/data/tmp/tts"
 os.makedirs(AUDIO_DIR, exist_ok=True)
 
 # Configuración de modelos
 MODEL_CONFIG = {
     "es": {
-        "model": "tts_models/es/css10/vits",
-        "vocoder": None  # Vits no necesita vocoder separado
-
+        
+        #"model": "tts_models/es/css10/vits",
+        "model":"tts_models/multilingual/multi-dataset/xtts_v2",
+        "vocoder": None,  # Vits no necesita vocoder separado
+        "speaker_wav":"muestra.wav",
         #"model":"tts_models/es/mai/tacotron2-DDC",
         #"vocoder":"vocoder_models/universal/libri-tts/fullband-melgan"
         #"vocoder":"vocoder_models/universal/libri-tts/wavegrad"
     },
     "en": {
-        "model": "tts_models/en/ljspeech/tacotron2-DDC",
-        "vocoder": "vocoder_models/en/ljspeech/hifigan_v2"  # Vocoder específico
+        #"model": "tts_models/en/ljspeech/tacotron2-DDC",
+        #"vocoder": "vocoder_models/en/ljspeech/hifigan_v2"  # Vocoder específico
+        "model": "tts_models/multilingual/multi-dataset/xtts_v2",
+        "vocoder": None
     }
 }
 
@@ -95,11 +112,17 @@ async def generate_tts(request: Request):
             "--text", texto,
             "--out_path", output_path,
             "--model_name", config["model"],
-            "--use_cuda", "false"  # Fuerza CPU
+            "--use_cuda", "false",
+
+            "--language_idx", idioma
         ]
-        
-        if config["vocoder"]:
+
+        if config.get("speaker_wav"):
+            cmd.extend(["--speaker_wav", config["speaker_wav"]])
+
+        if config.get("vocoder"):
             cmd.extend(["--vocoder_name", config["vocoder"]])
+
         
         subprocess.run(cmd, check=True)
 

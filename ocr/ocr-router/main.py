@@ -9,7 +9,19 @@ import httpx
 import cv2
 import tempfile
 
+from fastapi_response_standard import success_response
+from fastapi_response_standard import (
+    CatchAllMiddleware,
+    success_response,
+    error_response
+)
+from fastapi_response_standard.common_exception_handlers import (
+    not_found_handler,
+    validation_error_handler
+)
+
 app = FastAPI()
+app.add_middleware(CatchAllMiddleware)
 
 OCR_API_URL = "http://ocr-api:5003"
 OCR_PADDLE_URL = "http://ocr-paddle:5010"
@@ -26,8 +38,6 @@ def convert_numpy_types(obj):
         return obj.item()
     else:
         return obj
-
-
 
 def is_pdf_with_embedded_text(file_path: str) -> bool:
     try:
@@ -93,14 +103,14 @@ async def ocr_smart(
                         response = await client.post(
                             f"{OCR_API_URL}/extract-pdf-text", files={"file": (file.filename, f, file.content_type)}
                         )
-                        return {"router": "extract", "result": convert_numpy_types(response.json())}
+                        return success_response({"router": "extract", "result": convert_numpy_types(response.json())})
             else:
                 async with httpx.AsyncClient() as client:
                     with open(file_path, "rb") as f:
                         response = await client.post(
                             f"{OCR_API_URL}/ocr-tesseract", files={"file": (file.filename, f, file.content_type)}
                         )
-                        return {"router": "ocr-api", "result": convert_numpy_types(response.json())}
+                        return success_response({"router": "ocr-api", "result": convert_numpy_types(response.json())})
 
         image = Image.open(file_path)
         stats = image_stats(image)
@@ -119,11 +129,11 @@ async def ocr_smart(
             with open(file_path, "rb") as f:
                 response = await client.post(target_url, files={"file": (file.filename, f, file.content_type)})
 
-            return {
+            return success_response({
                 "router": router_used,
                 "metadata": convert_numpy_types(stats),
                 "result": response.json()
-            }
+            })
 
     finally:
         shutil.rmtree(temp_dir)

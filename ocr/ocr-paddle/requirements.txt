@@ -1,0 +1,11 @@
+paddleocr==2.6.1.3
+paddlepaddle-gpu==2.5.1 -f https://www.paddlepaddle.org.cn/whl/mkl/avx/stable.html
+fastapi>=0.88,<0.96
+starlette>=0.22,<0.28
+python-jose[cryptography]>=3.3.0
+git+https://github.com/ciskosv/fastapi_response_standard.git@v1.0.0
+uvicorn[standard]==0.22.0
+pdf2image==1.16.3
+python-multipart==0.0.6
+
+

@@ -12,6 +12,19 @@ from haystack.components.converters import (
 
 import os
 
+from fastapi_response_standard import success_response
+from fastapi_response_standard import (
+    CatchAllMiddleware,
+    success_response,
+    error_response
+)
+from fastapi_response_standard.common_exception_handlers import (
+    not_found_handler,
+    validation_error_handler
+)
+
+
+
 print("🔧 Conectando a Qdrant...")
 document_store = QdrantDocumentStore(host="qdrant", port=6333, embedding_dim=384)
 

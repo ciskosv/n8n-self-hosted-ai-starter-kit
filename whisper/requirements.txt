@@ -1,0 +1,6 @@
+torch
+fastapi
+uvicorn
+python-multipart
+git+https://github.com/openai/whisper.git
+git+https://github.com/ciskosv/fastapi_response_standard.git@v1.0.0

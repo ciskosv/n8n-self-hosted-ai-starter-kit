@@ -10,7 +10,19 @@ from transformers import TrOCRProcessor, VisionEncoderDecoderModel
 import torch
 from pdf2image import convert_from_path
 
+from fastapi_response_standard import success_response
+from fastapi_response_standard import (
+    CatchAllMiddleware,
+    success_response,
+    error_response
+)
+from fastapi_response_standard.common_exception_handlers import (
+    not_found_handler,
+    validation_error_handler
+)
+
 app = FastAPI()
+app.add_middleware(CatchAllMiddleware)
 
 UPLOAD_DIR = "/app/temp_uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)

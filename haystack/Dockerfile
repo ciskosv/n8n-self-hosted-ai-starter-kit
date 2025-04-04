@@ -21,6 +21,9 @@ RUN pip install --no-cache-dir \
     qdrant-client==1.6.4 \
     pypdf==3.9.1
 
+RUN pip install --no-cache-dir \
+    torch==2.1.2 \
+    --index-url https://download.pytorch.org/whl/cu121
 
 # 📁 Configuración del entorno
 WORKDIR /app

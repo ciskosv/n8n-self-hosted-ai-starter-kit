@@ -1,22 +1,44 @@
-from flask import Flask, jsonify, request
+from fastapi import FastAPI, UploadFile, File
+from fastapi.responses import JSONResponse
 import whisper
 import os
+import shutil
 
-app = Flask(__name__)
+from fastapi_response_standard import success_response
+from fastapi_response_standard import (
+    CatchAllMiddleware,
+    success_response,
+    error_response
+)
+from fastapi_response_standard.common_exception_handlers import (
+    not_found_handler,
+    validation_error_handler
+)
+
+app = FastAPI()
+app.add_middleware(CatchAllMiddleware)
+
+
 model = whisper.load_model(os.getenv("WHISPER_MODEL", "base"))
+#model = whisper.load_model("large-v3")
 
-@app.route("/health", methods=["GET"])
-def health():
-    return jsonify({"status": "ok"})
 
-@app.route('/transcribe', methods=['POST'])
-def transcribe():
-    file = request.files['audio']
-    filepath = f"./audio/{file.filename}"
-    file.save(filepath)
-    result = model.transcribe(filepath, language="es")
-    os.remove(filepath)
-    return {"text": result["text"]}
+@app.get("/health")
+async def health():
+    return success_response({"status": "ok"})
 
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+@app.post("/transcribe")
+async def transcribe(audio: UploadFile = File(...)):
+    try:
+        path = f"./audio/{audio.filename}"
+        with open(path, "wb") as f:
+            shutil.copyfileobj(audio.file, f)
+        result = model.transcribe(path, language="es")
+        os.remove(path)
+
+        return success_response(
+            {"text": result["text"]},
+            message="Transcripción completada."
+        )
+    except Exception as e:
+        return error_response(str(e), error_code="TRANSCRIPTION_ERROR", retryable=False)

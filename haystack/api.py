@@ -15,7 +15,19 @@ from haystack.components.converters import (
     MarkdownToDocument   # 🔄 Cambio de MarkdownFileToDocument
 )
 
+from fastapi_response_standard import success_response
+from fastapi_response_standard import (
+    CatchAllMiddleware,
+    success_response,
+    error_response
+)
+from fastapi_response_standard.common_exception_handlers import (
+    not_found_handler,
+    validation_error_handler
+)
+
 app = FastAPI()
+app.add_middleware(CatchAllMiddleware)
 
 docs_dir = "./docs"
 os.makedirs(docs_dir, exist_ok=True)

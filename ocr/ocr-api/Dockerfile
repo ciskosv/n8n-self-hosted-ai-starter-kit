@@ -2,6 +2,7 @@ FROM python:3.10-slim
 
 # Instalar dependencias del sistema
 RUN apt-get update && apt-get install -y \
+    git \
     tesseract-ocr \
     poppler-utils \
     libgl1 \
